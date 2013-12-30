@@ -73,9 +73,7 @@ public class MainActivity extends Activity {
 		protected void onPostExecute(List<String> values) {
 			this.values.clear();
 			this.values.addAll(values);
-			System.err.println("size: " + this.values.size());
 			adapter.notifyDataSetInvalidated();
-			System.err.println("size: " + adapter.getCount());
 		}
 	}
 
