@@ -10,7 +10,7 @@ import retrofit.http.POST;
 
 public interface AppointmentService {
 	@GET("/appointments")
-	List<String> listAppointments();
+	List<Appointment> listAppointments();
 	
 	@POST("/appointments")
 	void createAppointment(@Body Appointment appointment, Callback<List<Appointment>> cb);

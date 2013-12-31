@@ -3,9 +3,7 @@ package com.example.meanpocapp;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-
+import retrofit.RestAdapter;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -15,8 +13,6 @@ import android.view.MenuItem;
 import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.ListView;
-
-import com.example.meanpocapp.RestClient.RequestMethod;
 
 public class MainActivity extends Activity {
 
@@ -69,36 +65,30 @@ public class MainActivity extends Activity {
 	
 	public class LoadFeedData extends AsyncTask<Void, Void, List<String>> {
 
-		private final static String URL = "http://192.168.0.249:8080/api/appointments";
-
 		private List<String> values;
 		private BaseAdapter adapter;
+		private AppointmentService appointmentService;
 
 		public LoadFeedData(List<String> values, BaseAdapter adapter) {
 			this.values = values;
 			this.adapter = adapter;
+			
+			RestAdapter restAdapter = new RestAdapter.Builder().setServer(
+					Config.URL).build();
+			appointmentService = restAdapter
+					.create(AppointmentService.class);
 		}
 
 		@Override
 		protected List<String> doInBackground(Void... params) {
-			RestClient client = new RestClient(URL);
 			List<String> results = new ArrayList<String>();
 
-			try {
-				client.Execute(RequestMethod.GET);
-			} catch (Exception e) {
-				e.printStackTrace();
+			List<Appointment> appointments = appointmentService.listAppointments();
+			
+			for (Appointment appointment: appointments) {
+				results.add(appointment.getText());
 			}
-
-			try {
-				JSONArray jsonResults = new JSONArray(client.getResponse());
-				for (int i = 0; i < jsonResults.length(); i++) {
-					results.add(jsonResults.getJSONObject(i).getString("text"));
-				}
-			} catch (JSONException e) {
-				e.printStackTrace();
-			}
-
+			
 			return results;
 		}
 
